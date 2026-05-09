@@ -1,0 +1,16 @@
+Gitanalyze Functionality: 
+
+Tech Stack: 
+Python
+FastAPI
+SQLite -> PostgreSQL
+GitHub REST API
+requests
+Optional later: APScheduler for automation
+
+Core features for v1
+Add a repo to track
+Fetch GitHub stats
+Store snapshots in SQLite
+View repo analytics
+Generate a simple Repo Health Score
