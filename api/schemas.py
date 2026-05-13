@@ -1,5 +1,5 @@
-from pydantic import Basemodel
+from pydantic import BaseModel
 
-class Repo(Basemodel):
+class Repo(BaseModel):
     owner: str
     repo: str

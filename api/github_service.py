@@ -26,9 +26,9 @@ def repoData(owner: str, repo: str):
     data = response.json()
     return {
         "stars": data["stargazers_count"],
-        "forks": data["fork_count"],
+        "forks": data["forks_count"],
         "issues": data["open_issues_count"],
-        "watchers": data["watcher_count"],
+        "watchers": data["watchers_count"],
         "update": data["updated_at"],
     }
 
