@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from schemas import Repo
 import models
-from github_service import openPullRequests, repoData
+from github_service import calculate_health_score, openPullRequests, repoData
 from database import engine
 
 
@@ -11,7 +11,7 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
-@app.get("/")
+@app.get("/test")
 def home():
     return {"Output": "Gitanalyze is ready to start!"}
 
@@ -21,6 +21,34 @@ def stats(owner: str, repo: str):
     
     if data is None:
         raise HTTPException(status_code=404, detail="Repository not found or GitHub request failed")
+
+    pull_requests = openPullRequests(owner, repo)
+
+    if pull_requests is None:
+        raise HTTPException(status_code=404, detail="Repository not found or GitHub request failed")
+
+    open_prs = len(pull_requests)
+    open_issues = max(data["issues"] - open_prs, 0)
+    health_score = calculate_health_score(
+        stars=data["stars"],
+        forks=data["forks"],
+        issues=open_issues,
+        open_prs=open_prs,
+        watchers=data["watchers"],
+        updated_at=data["update"],
+    )
+
+    return {
+        "owner": owner,
+        "repo": repo,
+        "stars": data["stars"],
+        "forks": data["forks"],
+        "watchers": data["watchers"],
+        "open_issues": open_issues,
+        "open_prs": open_prs,
+        "updated_at": data["update"],
+        "health_score": health_score,
+    }
 
 @app.get("/repos/{owner}/{repo}/pulls/open")
 def get_open_pull_requests(owner: str, repo: str):
@@ -64,8 +92,7 @@ def getRepo():
     
     db: Session = SessionLocal()
 
-    repos = db.query(models.Repo).all 
+    repos = db.query(models.Repo).all()
     db.close
     return repos
-
 
