@@ -84,17 +84,23 @@ def calculate_health_score(
         + 0.30 * _bounded_log_score(forks, 10000)
         + 0.15 * _bounded_log_score(watchers, 50000)
     )
+    repo_signal = max(
+        _bounded_log_score(stars, 1000),
+        _bounded_log_score(forks, 200),
+        _bounded_log_score(watchers, 1000),
+    )
+    maintenance_confidence = 0.25 + (0.75 * repo_signal)
 
     fork_ratio = forks / max(stars, 1)
     collaboration_score = 10 * min(fork_ratio / 0.25, 1)
 
     issue_capacity = max(10, stars * 0.02 + forks * 0.10)
     issue_pressure = issues / issue_capacity
-    issue_score = 35 / (1 + issue_pressure)
+    issue_score = (35 / (1 + issue_pressure)) * maintenance_confidence
 
     pr_capacity = max(5, forks * 0.03 + stars * 0.002)
     pr_pressure = open_prs / pr_capacity
-    pr_score = 30 / (1 + pr_pressure)
+    pr_score = (30 / (1 + pr_pressure)) * maintenance_confidence
 
     score = (
         popularity_score
