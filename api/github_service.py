@@ -1,8 +1,8 @@
 import requests
+from config import GITHUB_TOKEN
 import os
-from datetime import datetime, timezone
 from math import log1p
-
+from datetime import datetime, timezone
 
 def _github_headers():
     token = os.getenv("GITHUB_TOKEN")
