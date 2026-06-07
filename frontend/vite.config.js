@@ -6,9 +6,18 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/repos': 'http://localhost:8000',
-      '/history': 'http://localhost:8000',
-      '/get_history': 'http://localhost:8000',
+      '/repos': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
+      '/history': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
+      '/get_history': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
     },
   },
 })
